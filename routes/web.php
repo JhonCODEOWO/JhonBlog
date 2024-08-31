@@ -6,16 +6,17 @@ use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('index');
 });
 
-Route::get('sanctum/csrf-cookie', function () {
-    return response()->json(['message' => 'CSRF token generated']);
-});
+Route::get('/{any}', function () {
+    return view('index');
+})->where('any', '^(?!api).*$');
 
-//Rutas agrupadas para el controlador de las categorías.
-Route::controller(CategoryController::class)->group(function(){
-    Route::get('api/categories', 'index');
+Route::get('api/getCSRF', function(){
+    return response()->json([
+        "token"=> csrf_token()
+    ]);
 });
 
 //Rutas para peticiones referentes a la tabla Role
@@ -25,6 +26,11 @@ Route::controller(RoleController::class)->group(function(){
     Route::post('api/role/create', 'store');
     Route::put('api/edit/role/{role}', 'update');
     Route::delete('api/delete/role/{role}', 'destroy');
+});
+
+//Rutas agrupadas para el controlador de las categorías.
+Route::controller(CategoryController::class)->group(function(){
+    Route::get('api/categories', 'index');
 });
 
 //Rutas para peticiones referentes a la tabla permission
